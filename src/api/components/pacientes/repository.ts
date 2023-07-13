@@ -49,3 +49,7 @@ export class PatientRepository {
         }
     }
 }
+
+export default{
+    PatientRepository
+}

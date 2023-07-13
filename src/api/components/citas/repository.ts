@@ -32,7 +32,7 @@ export class AppointmentRepository {
     }
 
     public async updateAppointment(id: number, updates: Partial<AppointmentResDB>): Promise<void> {
-        try{
+        try {
             await db('citas').where({ id_cita: id }).update(updates)
         } catch (error){
             logger.error( 'Failed updated appointment in repository', {error})
@@ -48,4 +48,7 @@ export class AppointmentRepository {
             throw new AppointmentDeleteError()
         }
     }
+}
+export default{
+    AppointmentRepository
 }

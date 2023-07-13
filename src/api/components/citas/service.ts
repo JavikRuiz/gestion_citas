@@ -63,7 +63,7 @@ export class AppointmentServiceImpl implements AppointmentService {
                 throw new RecordNotFoundError()
             }
             const updateAppointment = {...existAppointment, ...updates}
-            this.appointmentRepository.updateAppointment(id, updateAppointment)
+            await this.appointmentRepository.updateAppointment(id, updateAppointment)
             return updateAppointment
         } catch (error) {
             logger.error('Failed to update patient from service')
