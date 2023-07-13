@@ -7,12 +7,14 @@ import { PatientServiceImpl } from './service'
 const router = Router()
 const repository = new PatientRepository()
 const service = new PatientServiceImpl(repository)
-const controller: PatientController = new PatientControllerImpl(service)
+const patientController: PatientController = new PatientControllerImpl(service)
 
 
-router.get('',  controller.getAllPatient.bind(controller))
-router.post('/create',  controller.createPatient.bind(controller))
-router.get('/:id',  controller.getPatientById.bind(controller))
+router.get('',  patientController.getAllPatient.bind(patientController))
+router.post('/create',  patientController.createPatient.bind(patientController))
+router.get('/:id',  patientController.getPatientById.bind(patientController))
+router.put('/:id',  patientController.updatePatient.bind(patientController))
+router.delete('/:id',  patientController.deletePatient.bind(patientController))
 
 
 

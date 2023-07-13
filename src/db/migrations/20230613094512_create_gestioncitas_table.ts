@@ -3,37 +3,55 @@ import { Knex } from 'knex'
 export async function up(knex:Knex): Promise<void> {
     await knex.raw(
         `
+        CREATE OR REPLACE FUNCTION trigger_set_timestamp()
+        RETURNS TRIGGER AS $$
+        BEGIN
+        NEW.updated_at = NOW();
+        RETURN NEW;
+        END;
+        $$ LANGUAGE plpgsql;
+
         CREATE TABLE IF NOT EXISTS doctores (
             id_doctor bigserial,
-            nombre VARCHAR, 
-            apellido VARCHAR, 
+            nombre VARCHAR,
+            apellido VARCHAR,
             especialidad VARCHAR,
             consultorio VARCHAR,
             correo VARCHAR,
-            created_at timestamptz,
-            updated_at timestamptz,
+            created_at timestamptz NOT NULL DEFAULT NOW(),
+            updated_at timestamptz NOT NULL DEFAULT NOW(),
             PRIMARY key(id_doctor)
         );
-        
+
+        CREATE TRIGGER set_timestamp
+        BEFORE UPDATE ON doctores
+        FOR EACH ROW
+        EXECUTE PROCEDURE trigger_set_timestamp();
+
         CREATE TABLE IF NOT EXISTS pacientes (
             id_paciente bigserial,
-            nombre VARCHAR, 
-            apellido VARCHAR, 
+            nombre VARCHAR,
+            apellido VARCHAR,
             identificacion VARCHAR UNIQUE,
-            telefono INT,
-            created_at timestamptz,
-            updated_at timestamptz,
+            telefono BIGINT,
+            created_at timestamptz NOT NULL DEFAULT NOW(),
+            updated_at timestamptz NOT NULL DEFAULT NOW(),
             PRIMARY key(id_paciente)
         );
-        
+
+        CREATE TRIGGER set_timestamp
+        BEFORE UPDATE ON pacientes
+        FOR EACH ROW
+        EXECUTE PROCEDURE trigger_set_timestamp();
+
         CREATE TABLE IF NOT EXISTS citas (
             id_cita bigserial,
             horario VARCHAR,
             especialidad VARCHAR,
             id_doctor BIGINT,
             identificacion_paciente VARCHAR,
-            created_at timestamptz,
-            updated_at timestamptz,
+            created_at timestamptz NOT NULL DEFAULT NOW(),
+            updated_at timestamptz NOT NULL DEFAULT NOW(),
             PRIMARY key(id_cita),
             CONSTRAINT fk_doctores
             FOREIGN KEY (id_doctor)
@@ -42,6 +60,11 @@ export async function up(knex:Knex): Promise<void> {
             FOREIGN KEY (identificacion_paciente)
             REFERENCES pacientes(identificacion)
         );
+
+        CREATE TRIGGER set_timestamp
+        BEFORE UPDATE ON citas
+        FOR EACH ROW
+        EXECUTE PROCEDURE trigger_set_timestamp();
         `
     )
 }
